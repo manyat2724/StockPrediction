@@ -12,6 +12,10 @@ import {
 import axios from 'axios';
 import moment from 'moment';
 
+// Configure axios base URL for production
+const API_BASE_URL = process.env.REACT_APP_API_URL || '';
+axios.defaults.baseURL = API_BASE_URL;
+
 const { Header, Content, Sider } = Layout;
 const { Option } = Select;
 const { TabPane } = Tabs;
