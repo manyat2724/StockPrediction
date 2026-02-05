@@ -274,10 +274,10 @@ def add_rolling_features(df: pd.DataFrame, window: int = 14) -> pd.DataFrame:
             df[col] = df[col].fillna(50.0)
         elif 'MA' in col or 'Volatility' in col:
             # For moving averages, forward-fill then backward-fill
-            df[col] = df[col].fillna(method='ffill').fillna(method='bfill').fillna(0.0)
+            df[col] = df[col].ffill().bfill().fillna(0.0)
         else:
             # For other columns, forward-fill then backward-fill then 0
-            df[col] = df[col].fillna(method='ffill').fillna(method='bfill').fillna(0.0)
+            df[col] = df[col].ffill().bfill().fillna(0.0)
     
     # Replace inf values with finite values
     df = df.replace([np.inf, -np.inf], np.nan)
