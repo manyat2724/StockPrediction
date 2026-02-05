@@ -1,0 +1,80 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual Environment
+venv/
+env/
+ENV/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# Model files (large)
+models/*.pkl
+models/*.json
+*.pkl
+*.h5
+*.model
+
+# Data files (large)
+data/*.csv
+data/*.json
+*.csv
+*.xlsx
+
+# Logs
+*.log
+logs/
+
+# Environment variables
+.env
+.env.local
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Node modules (if any)
+node_modules/
+
+frontend/node_modules/
+frontend/node_modules/.cache/
+
+# Output files
+output/
+*.png
+*.jpg
+*.pdf
+
+# Keep tickers.json but ignore large data
+!data/tickers.json
+
+# Keep model metadata structure but ignore actual models
+!models/.gitkeep

@@ -1,0 +1,164 @@
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #f5f5f5;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark-mode {
+  background-color: #141414;
+  color: #fff;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+}
+
+.dashboard-container {
+  padding: 24px;
+  min-height: 100vh;
+}
+
+.chart-container {
+  background: white;
+  padding: 24px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 24px;
+}
+
+.metric-card {
+  text-align: center;
+  padding: 16px;
+}
+
+.metric-value {
+  font-size: 24px;
+  font-weight: bold;
+  color: #1890ff;
+}
+
+.metric-label {
+  color: #666;
+  margin-top: 8px;
+}
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 200px;
+}
+
+.error-message {
+  color: #ff4d4f;
+  text-align: center;
+  padding: 24px;
+}
+
+/* Dark mode table styles */
+.dark-table .ant-table {
+  background: #1f1f1f;
+  color: #fff;
+}
+
+.dark-table .ant-table-thead > tr > th {
+  background: #262626 !important;
+  color: #fff !important;
+  border-color: #434343 !important;
+}
+
+.dark-table .ant-table-tbody > tr > td {
+  background: #1f1f1f !important;
+  color: #fff !important;
+  border-color: #434343 !important;
+}
+
+.dark-table .ant-table-tbody > tr:hover > td {
+  background: #262626 !important;
+}
+
+.dark-table .ant-pagination-item {
+  background: #262626;
+  border-color: #434343;
+}
+
+.dark-table .ant-pagination-item a {
+  color: #fff;
+}
+
+.dark-table .ant-pagination-item-active {
+  background: #1890ff;
+  border-color: #1890ff;
+}
+
+/* Dark mode card improvements */
+body.dark-mode .ant-card {
+  background: #1f1f1f;
+  border-color: #434343;
+}
+
+body.dark-mode .ant-card-head {
+  background: #1f1f1f;
+  border-color: #434343;
+}
+
+body.dark-mode .ant-card-head-title {
+  color: #fff;
+}
+
+body.dark-mode .ant-card-body {
+  color: #fff;
+}
+
+/* Dark mode select and input */
+body.dark-mode .ant-select-selector {
+  background: #262626 !important;
+  border-color: #434343 !important;
+  color: #fff !important;
+}
+
+body.dark-mode .ant-select-selection-item {
+  color: #fff !important;
+}
+
+body.dark-mode .ant-input-number {
+  background: #262626 !important;
+  border-color: #434343 !important;
+}
+
+body.dark-mode .ant-input-number-input {
+  color: #fff !important;
+}
+
+/* Dark mode tabs */
+body.dark-mode .ant-tabs-tab {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .ant-tabs-tab-active {
+  color: #1890ff;
+}
+
+body.dark-mode .ant-tabs-ink-bar {
+  background: #1890ff;
+}
+
+body.dark-mode .ant-tabs-content-holder {
+  color: #fff;
+}
+
+/* Dark mode statistic */
+body.dark-mode .ant-statistic-title {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+body.dark-mode .ant-statistic-content {
+  color: #fff;
+}
+
