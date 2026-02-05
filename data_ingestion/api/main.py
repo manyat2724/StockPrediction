@@ -25,7 +25,7 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 # Import our modules
-from modeling.prophet_model import load_features, train_prophet
+from modeling.prophet_model import load_features, train_prophet, predict_with_pretrained_model, get_available_models
 from modeling.xgboost_model import train_xgboost_model, predict_xgboost
 from modeling.signals import generate_trading_signals, detect_anomalies, calculate_portfolio_metrics
 from modeling.advanced_analytics import (
@@ -134,7 +134,9 @@ async def root():
         "message": "Stock Analysis API",
         "version": "2.0.0",
         "endpoints": {
-            "forecast": "/forecast - Stock price forecasting",
+            "predict": "/predict - Real-time predictions using pre-trained models (NO RETRAINING)",
+            "forecast": "/forecast - Stock price forecasting (may retrain)",
+            "models/available": "/models/available - Get list of available pre-trained models",
             "evaluate": "/evaluate - Model evaluation and benchmarking",
             "sentiment": "/sentiment - Market sentiment analysis",
             "signals": "/signals - Automated trading signals",
@@ -160,6 +162,122 @@ async def favicon():
 async def health_check():
     """Health check endpoint"""
     return {"status": "healthy", "timestamp": datetime.now().isoformat()}
+
+@app.post("/predict", response_model=ForecastResponse)
+async def get_realtime_prediction(request: ForecastRequest):
+    """
+    Get real-time stock price predictions using pre-trained models (NO RETRAINING)
+    This endpoint uses existing pre-trained models for fast, real-time predictions
+    """
+    try:
+        # Use pre-trained model for prediction (no retraining)
+        forecast = predict_with_pretrained_model(
+            ticker=request.ticker,
+            periods=request.days,
+            use_real_sentiment=request.use_real_sentiment
+        )
+        
+        # Get recent predictions
+        recent_forecast = forecast.tail(request.days)
+        
+        # Load current data for metrics and current price
+        df = load_features(ticker=request.ticker, use_real_sentiment=request.use_real_sentiment)
+        if len(df) > 500:
+            df = df.tail(500).reset_index(drop=True)
+        
+        # Calculate basic metrics if we have historical data
+        evaluator = ModelEvaluator()
+        metrics = {}
+        if len(df) > 0 and 'close_price' in df.columns:
+            # Compare historical predictions with actual prices
+            hist_len = min(len(df), len(forecast))
+            if hist_len > 0:
+                actual_prices = df['close_price'].values[:hist_len]
+                predicted_prices = forecast['yhat'].values[:hist_len]
+                
+                # Ensure equal length
+                min_len = min(len(actual_prices), len(predicted_prices))
+                if min_len > 0:
+                    actual_aligned = actual_prices[:min_len]
+                    predicted_aligned = predicted_prices[:min_len]
+                    
+                    # Ensure no NaN or inf values
+                    actual_aligned = np.nan_to_num(actual_aligned, nan=0.0, posinf=0.0, neginf=0.0)
+                    predicted_aligned = np.nan_to_num(predicted_aligned, nan=0.0, posinf=0.0, neginf=0.0)
+                    
+                    # Compute metrics
+                    metrics = evaluator.evaluate_model(actual_aligned, predicted_aligned)
+                    
+                    # Ensure metrics are finite
+                    if 'RMSE' in metrics:
+                        metrics['RMSE'] = np.nan_to_num(metrics['RMSE'], nan=0.0, posinf=0.0, neginf=0.0)
+                    if 'MAE' in metrics:
+                        metrics['MAE'] = np.nan_to_num(metrics['MAE'], nan=0.0, posinf=0.0, neginf=0.0)
+        
+        # If no metrics computed, set defaults
+        if not metrics:
+            metrics = {'RMSE': 0.0, 'MAE': 0.0, 'MAPE': 0.0, 'Directional_Accuracy': 0.0}
+        
+        # Format predictions
+        predictions = []
+        for _, row in recent_forecast.iterrows():
+            pred_price = float(row['yhat'])
+            lower = float(row['yhat_lower'])
+            upper = float(row['yhat_upper'])
+            
+            # Validate values
+            pred_price = np.nan_to_num(pred_price, nan=0.0, posinf=0.0, neginf=0.0)
+            lower = np.nan_to_num(lower, nan=0.0, posinf=0.0, neginf=0.0)
+            upper = np.nan_to_num(upper, nan=0.0, posinf=0.0, neginf=0.0)
+            
+            predictions.append({
+                "date": row['ds'].isoformat() if pd.notna(row['ds']) else datetime.now().isoformat(),
+                "predicted_price": pred_price,
+                "lower_bound": lower,
+                "upper_bound": upper,
+                "confidence_width": abs(upper - lower)
+            })
+        
+        # Get current price
+        current_price = float(df['close_price'].iloc[-1]) if 'close_price' in df.columns else float(df['y'].iloc[-1]) if 'y' in df.columns else 0.0
+        current_price = np.nan_to_num(current_price, nan=0.0, posinf=0.0, neginf=0.0)
+        
+        # Get last actual price date
+        last_date = df['ds'].iloc[-1] if 'ds' in df.columns else datetime.now()
+        
+        return ForecastResponse(
+            ticker=request.ticker,
+            forecast_date=datetime.now().isoformat(),
+            predictions=predictions,
+            metrics=metrics,
+            status="success",
+            current_price=current_price,
+            last_actual_date=str(last_date)
+        )
+        
+    except ValueError as e:
+        # Model not found - return helpful error
+        available_models = get_available_models()
+        raise HTTPException(
+            status_code=404,
+            detail=f"{str(e)}. Available models: {', '.join(available_models)}"
+        )
+    except Exception as e:
+        logger.error(f"Real-time prediction failed: {str(e)}", exc_info=True)
+        raise HTTPException(status_code=500, detail=f"Real-time prediction failed: {str(e)}")
+
+@app.get("/models/available")
+async def get_available_pretrained_models():
+    """Get list of available pre-trained models"""
+    try:
+        models = get_available_models()
+        return {
+            "available_models": models,
+            "count": len(models),
+            "status": "success"
+        }
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Failed to get available models: {str(e)}")
 
 @app.post("/forecast", response_model=ForecastResponse)
 async def get_forecast(request: ForecastRequest):
@@ -1257,10 +1375,12 @@ async def shutdown_event():
 if __name__ == "__main__":
     # When running directly, use the correct module path for reload to work
     # When running via uvicorn module: uvicorn data_ingestion.api.main:app
+    import os
+    port = int(os.getenv("PORT", 8000))  # Use PORT env var for Render, default to 8000 for localhost
     uvicorn.run(
         "data_ingestion.api.main:app",  # Use module path for reload support
         host="0.0.0.0",
-        port=8000,
+        port=port,
         reload=True,
         log_level="info"
     )

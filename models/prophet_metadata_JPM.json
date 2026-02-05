@@ -1,0 +1,15 @@
+{
+  "ticker": "JPM",
+  "trained_date": "2025-12-05T23:48:33.022537",
+  "data_hash": "555fd8b122cf88c6997c097b38b4685e",
+  "regressor_cols": [
+    "rsi",
+    "macd_signal",
+    "volume_change",
+    "sentiment",
+    "MA_5_norm",
+    "MA_10_norm",
+    "MA_20_norm"
+  ],
+  "last_price": 316.6400146484375
+}

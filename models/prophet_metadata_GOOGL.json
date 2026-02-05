@@ -1,0 +1,15 @@
+{
+  "ticker": "GOOGL",
+  "trained_date": "2026-01-31T08:29:00.889242",
+  "data_hash": "6a5a896ed32a22cdd283ce82270f6f46",
+  "regressor_cols": [
+    "rsi",
+    "macd_signal",
+    "volume_change",
+    "sentiment",
+    "MA_5_norm",
+    "MA_10_norm",
+    "MA_20_norm"
+  ],
+  "last_price": 338.0
+}

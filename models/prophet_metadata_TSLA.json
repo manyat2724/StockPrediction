@@ -1,0 +1,15 @@
+{
+  "ticker": "TSLA",
+  "trained_date": "2026-01-31T08:29:12.637873",
+  "data_hash": "33adfe951580b6b88a77098119c88f4a",
+  "regressor_cols": [
+    "rsi",
+    "macd_signal",
+    "volume_change",
+    "sentiment",
+    "MA_5_norm",
+    "MA_10_norm",
+    "MA_20_norm"
+  ],
+  "last_price": 430.4100036621094
+}

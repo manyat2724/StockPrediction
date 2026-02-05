@@ -1,0 +1,15 @@
+{
+  "ticker": "AMZN",
+  "trained_date": "2025-12-06T11:00:11.920511",
+  "data_hash": "f5cae58ff83707727c02570d8020c206",
+  "regressor_cols": [
+    "rsi",
+    "macd_signal",
+    "volume_change",
+    "sentiment",
+    "MA_5_norm",
+    "MA_10_norm",
+    "MA_20_norm"
+  ],
+  "last_price": 229.52999877929688
+}

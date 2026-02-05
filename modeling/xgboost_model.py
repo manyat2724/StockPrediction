@@ -5,6 +5,7 @@ Implements regression model with rolling features and sentiment
 
 import sys
 import os
+import joblib
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import pandas as pd
@@ -135,6 +136,12 @@ def train_xgboost_model(df: pd.DataFrame, test_size: float = 0.2, random_state: 
     )
     
     model.fit(X_train_scaled, y_train)
+    import joblib
+from pathlib import Path
+
+Path("models").mkdir(exist_ok=True)
+joblib.dump(model, "models/xgboost_model.pkl")
+
     
     # Make predictions
     y_pred_train = model.predict(X_train_scaled)

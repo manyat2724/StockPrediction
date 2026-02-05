@@ -1,0 +1,15 @@
+{
+  "ticker": "META",
+  "trained_date": "2025-12-06T14:47:40.267317",
+  "data_hash": "411676770556537881effa45aaaf0a0d",
+  "regressor_cols": [
+    "rsi",
+    "macd_signal",
+    "volume_change",
+    "sentiment",
+    "MA_5_norm",
+    "MA_10_norm",
+    "MA_20_norm"
+  ],
+  "last_price": 673.4199829101562
+}

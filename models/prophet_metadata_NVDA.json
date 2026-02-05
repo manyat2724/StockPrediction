@@ -1,0 +1,15 @@
+{
+  "ticker": "NVDA",
+  "trained_date": "2026-01-31T08:45:20.825120",
+  "data_hash": "60fd35853cc79113a21e012bfc868766",
+  "regressor_cols": [
+    "rsi",
+    "macd_signal",
+    "volume_change",
+    "sentiment",
+    "MA_5_norm",
+    "MA_10_norm",
+    "MA_20_norm"
+  ],
+  "last_price": 191.1300048828125
+}

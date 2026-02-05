@@ -193,6 +193,77 @@ def load_cached_model(ticker: str, data_hash: str) -> tuple:
         print(f"Error loading cached model: {e}")
         return None, None, None
 
+def load_pretrained_model(ticker: str) -> tuple:
+    """
+    Load pre-trained model without any retraining checks
+    This function loads models for real-time prediction without retraining
+    Returns (model, scalers, metadata) or (None, None, None) if not found
+    """
+    model_path = get_model_path(ticker)
+    metadata_path = get_model_metadata_path(ticker)
+    
+    if not os.path.exists(model_path) or not os.path.exists(metadata_path):
+        return None, None, None
+    
+    try:
+        # Load metadata
+        with open(metadata_path, 'r') as f:
+            metadata = json.load(f)
+        
+        # Load model and scalers
+        with open(model_path, 'rb') as f:
+            cached_data = pickle.load(f)
+            model = cached_data['model']
+            scalers = cached_data.get('scalers', {})
+        
+        return model, scalers, metadata
+    except Exception as e:
+        print(f"Error loading pre-trained model: {e}")
+        return None, None, None
+
+def predict_with_pretrained_model(ticker: str, periods: int = 30, use_real_sentiment: bool = True) -> pd.DataFrame:
+    """
+    Generate predictions using a pre-trained model without retraining
+    This is the main function for real-time predictions
+    
+    Args:
+        ticker: Stock ticker symbol
+        periods: Number of periods to forecast
+        use_real_sentiment: Whether to use real sentiment data
+    
+    Returns:
+        DataFrame with forecast predictions
+    """
+    # Load pre-trained model
+    model, scalers, metadata = load_pretrained_model(ticker)
+    
+    if model is None:
+        raise ValueError(f"No pre-trained model found for ticker {ticker}. Available models: {', '.join(get_available_models())}")
+    
+    # Load current data for regressors (needed for prediction)
+    df = load_features(ticker=ticker, use_real_sentiment=use_real_sentiment)
+    
+    # Limit data size for faster processing
+    if len(df) > 500:
+        df = df.tail(500).reset_index(drop=True)
+    
+    # Generate forecast using the pre-trained model
+    forecast = generate_forecast_from_model(model, df, periods, scalers, metadata)
+    
+    return forecast
+
+def get_available_models() -> list:
+    """
+    Get list of available pre-trained model tickers
+    """
+    available = []
+    if os.path.exists(MODEL_CACHE_DIR):
+        for file in os.listdir(MODEL_CACHE_DIR):
+            if file.startswith('prophet_model_') and file.endswith('.pkl'):
+                ticker = file.replace('prophet_model_', '').replace('.pkl', '')
+                available.append(ticker)
+    return sorted(available)
+
 def save_model_cache(ticker: str, model: Prophet, scalers: dict, data_hash: str, 
                     regressor_cols: list, last_price: float):
     """Save trained model to disk with metadata"""

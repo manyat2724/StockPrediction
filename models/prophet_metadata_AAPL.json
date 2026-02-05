@@ -1,0 +1,15 @@
+{
+  "ticker": "AAPL",
+  "trained_date": "2026-01-31T08:44:29.801843",
+  "data_hash": "25853df96ab985b54195e9cd72708a53",
+  "regressor_cols": [
+    "rsi",
+    "macd_signal",
+    "volume_change",
+    "sentiment",
+    "MA_5_norm",
+    "MA_10_norm",
+    "MA_20_norm"
+  ],
+  "last_price": 259.4800109863281
+}

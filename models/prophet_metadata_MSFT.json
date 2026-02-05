@@ -1,0 +1,15 @@
+{
+  "ticker": "MSFT",
+  "trained_date": "2026-01-31T08:44:55.748203",
+  "data_hash": "e9462afe60ce1245d761ad4d98f5de68",
+  "regressor_cols": [
+    "rsi",
+    "macd_signal",
+    "volume_change",
+    "sentiment",
+    "MA_5_norm",
+    "MA_10_norm",
+    "MA_20_norm"
+  ],
+  "last_price": 430.2900085449219
+}

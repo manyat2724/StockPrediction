@@ -4,4 +4,4 @@ services:
     env: python
     pythonVersion: 3.11.7
     buildCommand: pip install -r requirements.txt
-    startCommand: uvicorn data_ingestion.api.main:app --host 0.0.0.0 --port 10000
+    startCommand: uvicorn data_ingestion.api.main:app --host 0.0.0.0 --port $PORT
