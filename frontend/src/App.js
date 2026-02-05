@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Layout, Card, Row, Col, Select, Button, Spin, Alert, Tabs, Statistic, Tag, Table, InputNumber, Divider, Space, Tooltip, Progress, Input, message, Badge, List, Timeline, Modal, Drawer } from 'antd';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, Area, AreaChart, BarChart, Bar, RadarChart, Radar, PolarGrid, PolarAngleAxis, PolarRadiusAxis, ComposedChart, Scatter, PieChart, Pie, Cell } from 'recharts';
+import { Layout, Card, Row, Col, Select, Button, Spin, Alert, Tabs, Statistic, Tag, Table, InputNumber, Divider, Space, Tooltip, Progress, Input, message, Badge, List, Timeline } from 'antd';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as RechartsTooltip, Legend, ResponsiveContainer, Area, AreaChart, BarChart, Bar, Cell } from 'recharts';
 import { 
   StockOutlined, RiseOutlined, BarChartOutlined, HeartOutlined, 
   WarningOutlined, DollarOutlined, SignalFilled,
   SunOutlined, MoonOutlined, PlusOutlined, CloseOutlined, 
   BellOutlined, ExperimentOutlined, SwapOutlined, BulbOutlined,
-  PlayCircleOutlined, FileTextOutlined, TrophyOutlined, ThunderboltOutlined,
-  CheckCircleOutlined, CloseCircleOutlined, ExclamationCircleOutlined
+  PlayCircleOutlined, FileTextOutlined, TrophyOutlined,
+  CheckCircleOutlined, ExclamationCircleOutlined
 } from '@ant-design/icons';
 import axios from 'axios';
 import moment from 'moment';
@@ -16,7 +16,7 @@ import moment from 'moment';
 const API_BASE_URL = process.env.REACT_APP_API_URL || '';
 axios.defaults.baseURL = API_BASE_URL;
 
-const { Header, Content, Sider } = Layout;
+const { Header, Content } = Layout;
 const { Option } = Select;
 const { TabPane } = Tabs;
 
@@ -27,7 +27,6 @@ function App() {
   const [modelType, setModelType] = useState('prophet');
   const [forecastData, setForecastData] = useState(null);
   const [sentimentData, setSentimentData] = useState(null);
-  const [metrics, setMetrics] = useState(null);
   const [evaluationData, setEvaluationData] = useState(null);
   const [evaluationLoading, setEvaluationLoading] = useState(false);
   const [signals, setSignals] = useState(null);
@@ -51,7 +50,6 @@ function App() {
   const [tradeRecommendation, setTradeRecommendation] = useState(null);
   const [finalRecommendation, setFinalRecommendation] = useState(null);
   const [enhancedSignals, setEnhancedSignals] = useState(null);
-  const [showNewsDrawer, setShowNewsDrawer] = useState(false);
   const [compareTickersList, setCompareTickersList] = useState(['AAPL', 'GOOGL', 'MSFT']);
   const [paperTradeForm, setPaperTradeForm] = useState({ ticker: 'AAPL', action: 'BUY', shares: 10, price: 0 });
   
@@ -329,12 +327,14 @@ function App() {
     fetchEnhancedSignals();
     fetchPaperTradeAccount();
     fetchTradeRecommendation();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ticker, modelType]);
 
   useEffect(() => {
     if (portfolioTickers.length > 0 && portfolioWeights.length === portfolioTickers.length) {
       fetchPortfolio();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [portfolioTickers, portfolioWeights]);
 
   // Apply dark mode to body
@@ -368,17 +368,6 @@ function App() {
     }));
   };
 
-  const formatSignalsChartData = () => {
-    if (!signals?.signals) return [];
-    
-    return signals.signals.map((signal, index) => ({
-      date: moment(signal.date).format('MMM DD'),
-      strength: signal.strength,
-      signal: signal.signal,
-      change: signal.predicted_change
-    }));
-  };
-
   const getSentimentColor = (score) => {
     if (score > 0.1) return '#52c41a';
     if (score < -0.1) return '#ff4d4f';
@@ -397,11 +386,6 @@ function App() {
     return '#faad14';
   };
 
-  const getRiskColor = (level) => {
-    if (level === 'HIGH') return '#ff4d4f';
-    if (level === 'MEDIUM') return '#faad14';
-    return '#52c41a';
-  };
 
   const [signalFilter, setSignalFilter] = useState('all');
   const [signalSortField, setSignalSortField] = useState('date');
